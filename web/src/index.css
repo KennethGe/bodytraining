@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #059669;
+  --color-accent-soft: #ecfdf5;
+  --color-ink: #0f172a;
+  --color-canvas: #f4f5f7;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Segoe UI", Roboto, sans-serif;
+}
+
+html, body, #root { height: 100%; }
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-sans);
+}
+
+.num { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+.card {
+  @apply bg-white rounded-2xl border border-slate-200/70 shadow-[0_1px_2px_rgba(15,23,42,0.04)] p-5;
+}
+.card-title {
+  @apply text-[13px] font-semibold text-slate-500 uppercase tracking-wide mb-3;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-medium
+         hover:bg-slate-800 active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none;
+}
+.btn-accent {
+  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium
+         hover:bg-emerald-500 active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none;
+}
+.btn-outline {
+  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 bg-white text-sm font-medium text-slate-700
+         hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none;
+}
+.btn-sm { @apply !px-3 !py-1.5 !text-xs !rounded-lg; }
+.btn-danger {
+  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-red-200 bg-white text-sm font-medium text-red-600
+         hover:bg-red-50 hover:border-red-300 active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none;
+}
+
+.input {
+  @apply border border-slate-300 rounded-xl px-3 py-2 text-sm w-full bg-white placeholder:text-slate-400
+         focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-shadow;
+}
+.label { @apply text-xs font-medium text-slate-500 mb-1.5 block; }
+
+.chip {
+  @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
+}
+
+.page-title { @apply text-[22px] font-bold tracking-tight text-slate-900; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
+::-webkit-scrollbar-track { background: transparent; }
