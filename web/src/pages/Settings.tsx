@@ -43,6 +43,7 @@ export default function Settings() {
   const [aiStatus, setAiStatus] = useState(true);
   const [msg, setMsg] = useState("");
   const [mfaCode, setMfaCode] = useState("");
+  const [strava, setStrava] = useState<any>({ connected: false, configured: false });
   const [newRule, setNewRule] = useState({ sourceType: "", targetType: "", sports: ["running"] });
 
   const load = () => {
@@ -61,10 +62,29 @@ export default function Settings() {
     api.get("/api/coach/prompt").then((r: any) => setPrompt(r.prompt));
     api.get("/api/coach/memory").then(setMemory);
     api.get("/api/coach/status").then((r: any) => setAiStatus(r.configured));
+    api.get("/api/strava/status").then(setStrava).catch(() => {});
   };
   useEffect(load, []);
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("strava");
+    if (q === "connected") { flash("Strava 已连接，回设置页开启同步"); load(); }
+    else if (q === "denied") flash("Strava 授权被取消");
+    else if (q === "error") flash("Strava 授权交换失败，重试");
+    if (q) window.history.replaceState(null, "", window.location.pathname);
+  }, []);
 
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 2500); };
+
+  const connectStrava = async () => {
+    const r: any = await api.get("/api/strava/auth-url");
+    if (r.ok) window.open(r.url, "_blank");
+    else flash(r.message || "无法生成 Strava 授权链接");
+  };
+  const disconnectStrava = async () => {
+    await api.post("/api/strava/disconnect");
+    load();
+    flash("已断开 Strava");
+  };
 
   const submitMfa = async () => {
     await api.post("/api/garmin/mfa", { code: mfaCode });
@@ -142,6 +162,27 @@ export default function Settings() {
                 <input className="input !w-28 !py-1 !text-xs" value={mfaCode} placeholder="6 位验证码"
                   onChange={(e) => setMfaCode(e.target.value)} />
                 <button className="btn btn-sm" onClick={submitMfa} disabled={!mfaCode}>提交并同步</button>
+              </div>
+            )}
+            {s.type === "strava" && (
+              <div className="w-full flex items-center gap-2 bg-sky-50 border border-sky-200 rounded-xl px-3 py-2">
+                {strava.connected ? (
+                  <>
+                    <span className="text-[11px] text-sky-700 flex-1">
+                      已连接 Strava{strava.athlete ? `（${strava.athlete}）` : ""} · 仅读颂拓源活动（逐秒流+圈）
+                    </span>
+                    <button className="btn-outline btn-sm" onClick={disconnectStrava}>断开</button>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[11px] text-sky-700 flex-1">
+                      {strava.configured
+                        ? "连接 Strava 读取颂拓官方同步的数据（等待 apizone 审批期间的明细通道）"
+                        : "先在 .env 配置 STRAVA_CLIENT_ID / STRAVA_CLIENT_SECRET（Strava API 应用）"}
+                    </span>
+                    <button className="btn btn-sm" onClick={connectStrava} disabled={!strava.configured}>连接 Strava</button>
+                  </>
+                )}
               </div>
             )}
           </div>

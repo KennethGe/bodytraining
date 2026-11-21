@@ -31,6 +31,7 @@ export function setupAuth(app: FastifyInstance) {
       path === "/login" ||
       path === "/api/auth/login" ||
       path === "/api/auth/status" ||
+      path === "/api/strava/callback" ||
       path === "/api/health-ping" ||
       path.startsWith("/assets/");
     if (open) return;

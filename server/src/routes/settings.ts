@@ -6,6 +6,7 @@ import { config } from "../config.js";
 import { getAdapter, syncAll, recomputeHealthPrimary } from "../sync/engine.js";
 import { recomputeMerges } from "../sync/dedupe.js";
 import { parseFitStreams } from "../sync/fit-parse.js";
+import { stravaAuthUrl, stravaExchangeCode, stravaStatus, stravaDisconnect } from "../sync/strava.js";
 
 export function registerSettingsRoutes(app: FastifyInstance) {
   // ---------- 数据源 ----------
@@ -25,6 +26,34 @@ export function registerSettingsRoutes(app: FastifyInstance) {
       .run(enabled != null ? (enabled ? 1 : 0) : null, priority ?? null, Number(id));
     recomputeMerges();
     recomputeHealthPrimary();
+    return { ok: true };
+  });
+
+  // ---------- Strava OAuth 连接（秘密只进本服务，不进对话） ----------
+  const stravaRedirect = () => `http://localhost:${config.port}/api/strava/callback`;
+  app.get("/api/strava/status", async () => stravaStatus());
+  app.get("/api/strava/auth-url", async () => {
+    if (!config.strava.clientId || !config.strava.clientSecret)
+      return { ok: false, message: "先在 .env 配置 STRAVA_CLIENT_ID / STRAVA_CLIENT_SECRET" };
+    return { ok: true, url: stravaAuthUrl(stravaRedirect()) };
+  });
+  app.get("/api/strava/callback", async (req, reply) => {
+    const { code, error } = req.query as { code?: string; error?: string };
+    if (error || !code) {
+      console.log("[strava] callback denied:", error || "no code");
+      return reply.redirect("/?strava=denied");
+    }
+    try {
+      const t = await stravaExchangeCode(String(code), stravaRedirect());
+      console.log("[strava] connected, athlete:", t.athlete || "?");
+    } catch (e: any) {
+      console.log("[strava] exchange failed:", e?.message);
+      return reply.redirect("/?strava=error");
+    }
+    return reply.redirect("/?strava=connected");
+  });
+  app.post("/api/strava/disconnect", async () => {
+    stravaDisconnect();
     return { ok: true };
   });
 

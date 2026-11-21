@@ -27,6 +27,11 @@ export const config = {
   icu: {
     apiKey: process.env.ICU_API_KEY || "",
   },
+  strava: {
+    clientId: process.env.STRAVA_CLIENT_ID || "",
+    clientSecret: process.env.STRAVA_CLIENT_SECRET || "",
+    refreshToken: process.env.STRAVA_REFRESH_TOKEN || "", // 可选种子；正常走设置页 OAuth 存入 kv
+  },
   ai: {
     apiKey: process.env.DASHSCOPE_API_KEY || "",
     baseUrl:

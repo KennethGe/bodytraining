@@ -24,7 +24,7 @@ ensureCoachPrompt();
 ensureSources();
 
 // ---------- 认证 ----------
-app.get("/api/auth/status", async () => ({ authRequired, loggedIn: !authRequired }));
+app.get("/api/auth/status", async (req) => ({ authRequired, loggedIn: verifyToken(req.cookies?.bt_session) }));
 app.post("/api/auth/login", async (req, reply) => {
   const { password } = req.body as { password?: string };
   if (!authRequired) return { ok: true };

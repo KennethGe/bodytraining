@@ -5,6 +5,7 @@ import { db } from "../db.js";
 import { garminAdapter } from "./garmin.js";
 import { suuntoAdapter } from "./suunto.js";
 import { icuAdapter } from "./icu.js";
+import { stravaAdapter } from "./strava.js";
 import { recomputeMerges } from "./dedupe.js";
 import { runTransfers } from "./transfer.js";
 import { parseFitStreams } from "./fit-parse.js";
@@ -14,6 +15,7 @@ const adapters: Record<string, SyncAdapter> = {
   garmin: garminAdapter,
   suunto: suuntoAdapter,
   icu: icuAdapter,
+  strava: stravaAdapter,
 };
 
 export function getAdapter(type: string) {
@@ -23,6 +25,7 @@ export function getAdapter(type: string) {
 const SEED_SOURCES = [
   { type: "garmin", label: "佳明 Garmin", priority: 10 },
   { type: "suunto", label: "颂拓 Suunto（直连，当前被官方边缘层封禁）", priority: 20 },
+  { type: "strava", label: "Strava（颂拓接力）", priority: 21 },
   { type: "icu", label: "Intervals.icu（颂拓接力）", priority: 22 },
 ];
 
@@ -216,14 +219,21 @@ async function doSyncSource(sourceId: number): Promise<SyncResult> {
         newCount++;
         changed = true;
       }
-      // 明细流：新活动/更新过的活动拉取（并发，见下方）
-      if (changed) needStreams.push(activityId);
+      // 明细流：新/更新活动 + 历史缺流活动补齐（并发，见下方）
+      const hasStream = db.prepare(`SELECT 1 FROM activity_streams WHERE activity_id = ? LIMIT 1`).get(activityId);
+      if (changed || !hasStream) needStreams.push(activityId);
       // 原始 FIT 落盘（真实 Garmin 由 sidecar 下载，这里保留路径约定）
       const rawFile = path.join(config.rawDir, `${src.type}_${a.externalId}.fit`);
       if (fs.existsSync(rawFile)) {
         db.prepare(`UPDATE activities SET raw_path = ? WHERE id = ?`).run(path.relative(config.dataDir, rawFile), activityId);
       }
     }
+
+    // 历史缺流补齐：增量 list 不含旧活动，单独把本源缺流活动加入（限 200/轮，防限流）
+    const gap = db.prepare(
+      `SELECT a.id FROM activities a WHERE a.source_id = ? AND a.id NOT IN (SELECT activity_id FROM activity_streams) LIMIT 200`
+    ).all(sourceId) as { id: number }[];
+    for (const g of gap) if (!needStreams.includes(g.id)) needStreams.push(g.id);
 
     // 并发拉取明细流（8 路）
     for (let i = 0; i < needStreams.length; i += 8) {

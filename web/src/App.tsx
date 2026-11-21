@@ -113,10 +113,7 @@ export default function App() {
   const [auth, setAuth] = useState<{ authRequired: boolean; loggedIn: boolean } | null>(null);
 
   useEffect(() => {
-    api.get("/api/auth/status").then((s: any) => {
-      setAuth(s);
-      if (s.authRequired) api.get("/api/profile").catch(() => setAuth({ ...s, loggedIn: false }));
-    });
+    api.get("/api/auth/status").then(setAuth);
   }, []);
 
   if (!auth)
