@@ -1,6 +1,6 @@
 import { NavLink, Navigate, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Activity, TrendingUp, HeartPulse, CalendarDays, Bot, Settings, Dumbbell, RefreshCw } from "lucide-react";
+import { Activity, TrendingUp, HeartPulse, CalendarDays, Bot, Settings, RefreshCw } from "lucide-react";
 import { api } from "./api";
 import Login from "./pages/Login";
 import Activities from "./pages/Activities";
@@ -34,14 +34,12 @@ function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="h-full flex">
       {/* 桌面侧边栏 */}
-      <aside className="hidden md:flex flex-col w-56 shrink-0 bg-white border-r border-slate-200/70">
-        <div className="flex items-center gap-2.5 px-5 h-16 border-b border-slate-100">
-          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-900 text-white">
-            <Dumbbell size={18} />
-          </span>
+      <aside className="hidden md:flex flex-col w-56 shrink-0 bg-[#1a1a1a] border-r border-black/40">
+        <div className="flex items-center gap-2.5 px-5 h-16 border-b border-white/10">
+          <img src="/app-icon.png" alt="BodyTraining" className="w-9 h-9 rounded-xl" />
           <div>
-            <div className="font-bold text-[15px] leading-tight tracking-tight">BodyTraining</div>
-            <div className="text-[10px] text-slate-400 tracking-wide">个人训练 · 数据 · AI 教练</div>
+            <div className="font-bold text-[15px] leading-tight tracking-tight text-white">BodyTraining</div>
+            <div className="text-[10px] text-white/50 tracking-wide">个人训练 · 数据 · AI 教练</div>
           </div>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1">
@@ -50,8 +48,8 @@ function Layout({ children }: { children: React.ReactNode }) {
               key={n.to}
               to={n.to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  isActive ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive ? "bg-accent text-white" : "text-white/60 hover:bg-white/10 hover:text-white"
                 }`
               }
             >
@@ -60,8 +58,8 @@ function Layout({ children }: { children: React.ReactNode }) {
             </NavLink>
           ))}
         </nav>
-        <div className="p-3 border-t border-slate-100">
-          <button className="btn-outline btn-sm w-full" onClick={syncNow} disabled={syncing}>
+        <div className="p-3 border-t border-white/10">
+          <button className="btn-outline btn-sm w-full !bg-transparent !text-white/80 !border-white/20 hover:!bg-white/10" onClick={syncNow} disabled={syncing}>
             <RefreshCw size={13} className={syncing ? "animate-spin" : ""} />
             {syncing ? "同步中…" : "立即同步"}
           </button>
@@ -73,9 +71,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         {/* 移动端顶栏 */}
         <header className="md:hidden flex items-center justify-between px-4 h-14 bg-white/90 backdrop-blur border-b border-slate-200/70 sticky top-0 z-[1000]">
           <div className="flex items-center gap-2">
-            <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-900 text-white">
-              <Dumbbell size={14} />
-            </span>
+            <img src="/app-icon.png" alt="BodyTraining" className="w-7 h-7 rounded-lg" />
             <span className="font-bold text-sm">{current?.label || "BodyTraining"}</span>
           </div>
           <button className="p-2 rounded-lg hover:bg-slate-100 text-slate-500" onClick={syncNow} disabled={syncing}>
@@ -95,7 +91,7 @@ function Layout({ children }: { children: React.ReactNode }) {
               to={n.to}
               className={({ isActive }) =>
                 `flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium ${
-                  isActive ? "text-emerald-600" : "text-slate-400"
+                  isActive ? "text-accent" : "text-slate-400"
                 }`
               }
             >

@@ -23,10 +23,7 @@ export function getAdapter(type: string) {
 }
 
 const SEED_SOURCES = [
-  { type: "garmin", label: "佳明 Garmin", priority: 10 },
-  { type: "suunto", label: "颂拓 Suunto（直连，当前被官方边缘层封禁）", priority: 20 },
-  { type: "strava", label: "Strava（颂拓接力）", priority: 21 },
-  { type: "icu", label: "Intervals.icu（颂拓接力）", priority: 22 },
+  { type: "strava", label: "Strava（唯一同步源：佳明+颂拓经官方同步汇入）", priority: 10 },
 ];
 
 export function ensureSources() {

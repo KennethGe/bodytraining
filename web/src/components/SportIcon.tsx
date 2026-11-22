@@ -1,11 +1,11 @@
-import { Play, Bike, Waves, Mountain, Zap } from "lucide-react";
+import { Footprints, Bike, Waves, Mountain, Zap } from "lucide-react";
 
 export const SPORT_META: Record<string, { label: string; icon: any; color: string; bg: string }> = {
-  running: { label: "跑步", icon: Play, color: "#059669", bg: "#ecfdf5" },
+  running: { label: "跑步", icon: Footprints, color: "#ea580c", bg: "#fff7ed" },
   cycling: { label: "骑行", icon: Bike, color: "#2563eb", bg: "#eff6ff" },
   swimming: { label: "游泳", icon: Waves, color: "#0891b2", bg: "#ecfeff" },
   hiking: { label: "徒步", icon: Mountain, color: "#d97706", bg: "#fffbeb" },
-  other: { label: "其他", icon: Zap, color: "#7c3aed", bg: "#f5f3ff" },
+  other: { label: "其他", icon: Zap, color: "#64748b", bg: "#f1f5f9" },
 };
 
 export function SportIcon({ sport, size = 18 }: { sport: string; size?: number }) {

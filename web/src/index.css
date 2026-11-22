@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-accent: #059669;
-  --color-accent-soft: #ecfdf5;
-  --color-ink: #0f172a;
-  --color-canvas: #f4f5f7;
+  --color-accent: #fc4c02;
+  --color-accent-soft: #fff1eb;
+  --color-ink: #232323;
+  --color-canvas: #f7f7fa;
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Segoe UI", Roboto, sans-serif;
 }
 
@@ -19,22 +19,30 @@ body {
 .num { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 
 .card {
-  @apply bg-white rounded-2xl border border-slate-200/70 shadow-[0_1px_2px_rgba(15,23,42,0.04)] p-5;
+  @apply bg-white rounded-xl border border-[#e6e6e6] shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-5;
 }
 .card-title {
   @apply text-[13px] font-semibold text-slate-500 uppercase tracking-wide mb-3;
 }
+/* Strava 式炭黑面板：承载超大浅色指标数字 */
+.panel-dark {
+  @apply rounded-xl bg-[#1a1a1a] text-white p-6;
+}
+
+/* 动效层：linked 卡/行 hover  lift 2px，按钮 press */
+.lift { @apply transition-all duration-200; }
+.lift:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08); }
 
 .btn {
-  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-medium
-         hover:bg-slate-800 active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none;
+  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold
+         hover:bg-[#e64500] active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none;
 }
 .btn-accent {
-  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium
-         hover:bg-emerald-500 active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none;
+  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold
+         hover:bg-[#e64500] active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none;
 }
 .btn-outline {
-  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 bg-white text-sm font-medium text-slate-700
+  @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border border-slate-300 bg-white text-sm font-medium text-slate-700
          hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98] transition-all disabled:opacity-40 disabled:pointer-events-none;
 }
 .btn-sm { @apply !px-3 !py-1.5 !text-xs !rounded-lg; }
@@ -45,7 +53,7 @@ body {
 
 .input {
   @apply border border-slate-300 rounded-xl px-3 py-2 text-sm w-full bg-white placeholder:text-slate-400
-         focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-shadow;
+         focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 transition-shadow;
 }
 .label { @apply text-xs font-medium text-slate-500 mb-1.5 block; }
 
@@ -53,7 +61,7 @@ body {
   @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
 }
 
-.page-title { @apply text-[22px] font-bold tracking-tight text-slate-900; }
+.page-title { @apply text-[26px] font-extrabold tracking-tight text-[#232323]; }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }

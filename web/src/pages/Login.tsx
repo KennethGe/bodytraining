@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dumbbell, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { api } from "../api";
 
 export default function Login({ onOk }: { onOk: () => void }) {
@@ -21,12 +21,10 @@ export default function Login({ onOk }: { onOk: () => void }) {
   };
 
   return (
-    <div className="h-full flex items-center justify-center p-4 bg-slate-900">
+    <div className="h-full flex items-center justify-center p-4 bg-[#1a1a1a]">
       <form onSubmit={submit} className="w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl space-y-5">
         <div className="text-center">
-          <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-900 text-white mb-4">
-            <Dumbbell size={24} />
-          </span>
+          <img src="/app-icon.png" alt="BodyTraining" className="inline-flex w-14 h-14 rounded-2xl mb-4" />
           <h1 className="text-xl font-bold tracking-tight">BodyTraining</h1>
           <p className="text-xs text-slate-400 mt-1">个人训练 · 数据 · AI 教练</p>
         </div>
@@ -39,7 +37,7 @@ export default function Login({ onOk }: { onOk: () => void }) {
           </div>
         </div>
         {err && <p className="text-[13px] text-red-600 bg-red-50 rounded-xl px-3.5 py-2.5">{err}</p>}
-        <button className="btn w-full !py-2.5" disabled={busy}>{busy ? "登录中…" : "登录"}</button>
+        <button className="btn-accent w-full !py-2.5" disabled={busy}>{busy ? "登录中…" : "登录"}</button>
       </form>
     </div>
   );

@@ -12,10 +12,10 @@ const ZONE_NAMES = ["Z1 恢复", "Z2 有氧", "Z3 节奏", "Z4 阈值", "Z5 极�
 function Metric({ icon, label, value, unit }: { icon?: React.ReactNode; label: string; value: string; unit?: string }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[11px] text-slate-400 flex items-center gap-1">{icon}{label}</span>
-      <span className="num text-lg md:text-xl font-bold text-slate-900">
+      <span className="text-[11px] text-white/50 flex items-center gap-1">{icon}{label}</span>
+      <span className="num text-2xl md:text-3xl font-semibold text-white">
         {value}
-        {unit && <span className="text-xs font-medium text-slate-400 ml-1">{unit}</span>}
+        {unit && <span className="text-xs font-medium text-white/40 ml-1">{unit}</span>}
       </span>
     </div>
   );
@@ -45,8 +45,8 @@ export default function ActivityDetail() {
     yAxis: { type: "value", scale: !invert, inverse: invert, ...axisStyle(), nameStyle: { color: "#94a3b8", fontSize: 10 } },
     series: [{
       name, type: "line", data: pts.map((p) => p[1]), showSymbol: false, smooth: 0.3,
-      lineStyle: { width: 1.8, color },
-      areaStyle: { opacity: 0.1, color, origin: invert ? "end" : "auto" },
+      lineStyle: { width: 2, color },
+      areaStyle: { opacity: 0.3, color, origin: invert ? "end" : "auto" },
     }],
   });
 
@@ -57,16 +57,16 @@ export default function ActivityDetail() {
       </button>
 
       {/* 头卡 */}
-      <div className="card !p-6">
+      <div className="panel-dark">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3.5">
             <SportIcon sport={a.sport} size={22} />
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">{a.name}</h1>
-              <p className="text-[13px] text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl font-bold tracking-tight text-white">{a.name}</h1>
+              <p className="text-[13px] text-white/50 mt-0.5 flex items-center gap-2 flex-wrap">
                 {fmtDate(a.start_time)} · {sportLabel(a.sport)}
                 {detail.sources?.length > 1 && (
-                  <span className="chip !py-0.5 bg-blue-50 text-blue-600">
+                  <span className="chip !py-0.5 bg-white/10 text-white/80">
                     <Layers size={11} /> {detail.sources.join(" + ")} 已合并
                   </span>
                 )}
@@ -94,7 +94,7 @@ export default function ActivityDetail() {
 
         {st.hrZonePct && (
           <div className="mt-6">
-            <div className="text-[11px] text-slate-400 mb-2">心率区间分布（储备心率法）</div>
+            <div className="text-[11px] text-white/50 mb-2">心率区间分布（储备心率法）</div>
             <div className="flex h-2.5 rounded-full overflow-hidden gap-0.5">
               {st.hrZonePct.map((p: number, i: number) => p > 0 && (
                 <div key={i} style={{ width: `${p}%`, background: ZONE_COLORS[i] }} title={`${ZONE_NAMES[i]}: ${p}%`} />
@@ -102,9 +102,9 @@ export default function ActivityDetail() {
             </div>
             <div className="flex gap-4 mt-2 flex-wrap">
               {st.hrZonePct.map((p: number, i: number) => (
-                <span key={i} className="text-[11px] text-slate-400 flex items-center gap-1.5">
+                <span key={i} className="text-[11px] text-white/50 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full" style={{ background: ZONE_COLORS[i] }} />
-                  {ZONE_NAMES[i]} <b className="num text-slate-600">{p}%</b>
+                  {ZONE_NAMES[i]} <b className="num text-white">{p}%</b>
                 </span>
               ))}
             </div>
@@ -124,7 +124,7 @@ export default function ActivityDetail() {
           {streams.pace?.length > 0 && (
             <div className="card">
               <h2 className="card-title">{isRide ? "速度 · km/h" : "配速 · 秒/公里"}</h2>
-              <Chart option={lineOption(st.pacePerMin, PALETTE.blue, isRide ? "km/h" : "配速", !isRide) as any} />
+              <Chart option={lineOption(st.pacePerMin, PALETTE.accent, isRide ? "km/h" : "配速", !isRide) as any} />
             </div>
           )}
           {streams.power?.length > 0 && (
@@ -151,7 +151,7 @@ export default function ActivityDetail() {
               <h2 className="card-title !mb-2">数据来源（已查重合并）</h2>
               <div className="flex flex-wrap gap-1.5">
                 {detail.sources.map((s: string) => (
-                  <span key={s} className="chip bg-blue-50 text-blue-600"><Layers size={11} /> {s}</span>
+                  <span key={s} className="chip bg-slate-100 text-slate-600"><Layers size={11} /> {s}</span>
                 ))}
               </div>
             </div>

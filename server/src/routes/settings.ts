@@ -12,7 +12,8 @@ export function registerSettingsRoutes(app: FastifyInstance) {
   // ---------- 数据源 ----------
   app.get("/api/sources", async () => {
     const rows = db.prepare(`SELECT * FROM sources ORDER BY priority`).all() as any[];
-    return rows.map((s) => {
+    // 仅展示活跃同步源（strava）；已停用的 garmin/suunto/icu 行保留供历史活动 JOIN，但不再出现在同步管理里
+    return rows.filter((s) => s.type === "strava" || s.enabled).map((s) => {
       const a = getAdapter(s.type);
       const avail = a?.available() ?? { ok: false, reason: "未知数据源" };
       return { ...s, available: avail.ok, unavailable_reason: avail.reason ?? null };

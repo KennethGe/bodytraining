@@ -26,7 +26,7 @@ function Section({ icon: Icon, title, desc, children }: { icon: any; title: stri
 function Toggle({ on, onChange, disabled }: { on: boolean; onChange: () => void; disabled?: boolean }) {
   return (
     <button onClick={onChange} disabled={disabled}
-      className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${on ? "bg-emerald-500" : "bg-slate-200"} ${disabled ? "opacity-40" : ""}`}>
+      className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${on ? "bg-accent" : "bg-slate-200"} ${disabled ? "opacity-40" : ""}`}>
       <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${on ? "left-[18px]" : "left-0.5"}`} />
     </button>
   );
@@ -96,7 +96,6 @@ export default function Settings() {
   };
 
   const toggleSource = async (s: any) => { await api.put(`/api/sources/${s.id}`, { enabled: !s.enabled }); load(); };
-  const setPriority = async (s: any, priority: number) => { await api.put(`/api/sources/${s.id}`, { priority }); load(); };
   const syncOne = async (s: any) => { flash(`正在同步 ${s.label}…`); await api.post(`/api/sync/${s.id}`); load(); flash("同步完成"); };
 
   const addRule = async () => { await api.post("/api/transfer-rules", { ...newRule, enabled: true }); load(); flash("规则已添加"); };
@@ -138,7 +137,7 @@ export default function Settings() {
           <div key={s.id} className="flex items-center gap-3 flex-wrap py-2.5 border-b border-slate-50 last:border-0">
             <Toggle on={!!s.enabled} onChange={() => toggleSource(s)} disabled={!s.available} />
             <div className="flex-1 min-w-40">
-              <div className={`text-sm font-medium ${s.available ? "text-slate-800" : "text-slate-400"}`}>{s.label}</div>
+              <div className={`text-sm font-medium ${s.available ? "text-slate-800" : "text-slate-400"}`}>{s.type === "strava" ? "Strava" : s.label}</div>
               <div className="text-[11px] mt-0.5 flex items-center gap-1.5">
                 {!s.available && <span className="text-amber-600">{s.unavailable_reason}</span>}
                 {s.available && (s.last_sync_status === "ok"
@@ -148,11 +147,6 @@ export default function Settings() {
                     : <span className="text-slate-400 flex items-center gap-1"><Clock size={11} /> 未同步</span>)}
               </div>
             </div>
-            <label className="flex items-center gap-1.5 text-[11px] text-slate-400">
-              优先级
-              <input type="number" className="input !w-16 !py-1 !text-xs !rounded-lg" value={s.priority}
-                onChange={(e) => setPriority(s, Number(e.target.value))} />
-            </label>
             <button className="btn-outline btn-sm" onClick={() => syncOne(s)} disabled={!s.enabled}>
               <RefreshCw size={12} /> 同步
             </button>
@@ -165,39 +159,40 @@ export default function Settings() {
               </div>
             )}
             {s.type === "strava" && (
-              <div className="w-full flex items-center gap-2 bg-sky-50 border border-sky-200 rounded-xl px-3 py-2">
+              <div className="w-full flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-2">
                 {strava.connected ? (
                   <>
-                    <span className="text-[11px] text-sky-700 flex-1">
-                      已连接 Strava{strava.athlete ? `（${strava.athlete}）` : ""} · 仅读颂拓源活动（逐秒流+圈）
+                    <span className="text-[11px] text-orange-800 flex-1">
+                      已连接 Strava{strava.athlete ? `（${strava.athlete}）` : ""} · 佳明+颂拓经官方同步汇入（逐秒流+圈）
                     </span>
                     <button className="btn-outline btn-sm" onClick={disconnectStrava}>断开</button>
                   </>
                 ) : (
                   <>
-                    <span className="text-[11px] text-sky-700 flex-1">
+                    <span className="text-[11px] text-orange-800 flex-1">
                       {strava.configured
-                        ? "连接 Strava 读取颂拓官方同步的数据（等待 apizone 审批期间的明细通道）"
+                        ? "连接 Strava，统一汇入佳明与颂拓的官方同步数据"
                         : "先在 .env 配置 STRAVA_CLIENT_ID / STRAVA_CLIENT_SECRET（Strava API 应用）"}
                     </span>
-                    <button className="btn btn-sm" onClick={connectStrava} disabled={!strava.configured}>连接 Strava</button>
+                    <button className="btn-accent btn-sm" onClick={connectStrava} disabled={!strava.configured}>连接 Strava</button>
                   </>
                 )}
               </div>
             )}
           </div>
         ))}
-        <p className="text-[11px] text-slate-400">优先级数字越小越优先：查重时作为主记录、健康指标作为展示来源。真实佳明同步需本机 python3 + garminconnect（见 README）。</p>
+        <p className="text-[11px] text-slate-400">同步每 15 分钟自动执行，也可手动立即同步；多源重复活动会自动合并展示。</p>
       </Section>
 
+      {sources.filter((s) => s.enabled).length >= 2 && (
       <Section icon={ArrowLeftRight} title="活动互导" desc="按运动分类把活动从一个账号复制到另一个账号，防回环、自动与源合并">
         <div className="flex items-center gap-2 flex-wrap">
           <select className="input !w-40 !rounded-lg" value={newRule.sourceType} onChange={(e) => setNewRule({ ...newRule, sourceType: e.target.value })}>
-            {sources.filter((s) => s.enabled).map((s) => <option key={s.id} value={s.type}>{s.label}</option>)}
+            {sources.filter((s) => s.enabled).map((s) => <option key={s.id} value={s.type}>{s.type === "strava" ? "Strava" : s.label}</option>)}
           </select>
           <span className="text-slate-300">→</span>
           <select className="input !w-40 !rounded-lg" value={newRule.targetType} onChange={(e) => setNewRule({ ...newRule, targetType: e.target.value })}>
-            {sources.filter((s) => s.enabled && s.type !== newRule.sourceType).map((s) => <option key={s.id} value={s.type}>{s.label}</option>)}
+            {sources.filter((s) => s.enabled && s.type !== newRule.sourceType).map((s) => <option key={s.id} value={s.type}>{s.type === "strava" ? "Strava" : s.label}</option>)}
           </select>
           <div className="flex gap-1.5">
             {Object.keys(SPORT_META).map((k) => (
@@ -233,6 +228,7 @@ export default function Settings() {
           </details>
         )}
       </Section>
+      )}
 
       <Section icon={Bot} title="AI 教练" desc={`千问 API：${aiStatus ? "已配置" : "未配置（.env 设置 DASHSCOPE_API_KEY）"}`}>
         <div>
@@ -262,6 +258,10 @@ export default function Settings() {
         <div className="flex gap-2 flex-wrap">
           <a className="btn-outline" href="/api/data/backup"><Download size={13} /> 下载数据库备份</a>
           <button className="btn-outline" onClick={replay}><RotateCcw size={13} /> 全量重放</button>
+        </div>
+        <div className="mt-4 rounded-xl border border-red-200 bg-red-50/50 p-4">
+          <div className="text-xs font-semibold text-red-700 mb-1">危险区</div>
+          <p className="text-[11px] text-red-600/80 mb-2">清空不可恢复；操作前请先下载数据库备份。</p>
           <button className="btn-danger" onClick={clearAll}><Trash2 size={13} /> 清空活动/健康数据</button>
         </div>
         {syncLog.length > 0 && (

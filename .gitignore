@@ -6,4 +6,5 @@ data/*
 *.log
 .DS_Store
 server/sidecar/.venv/
-server/sidecar/.garminconnect/
+server/sidecar/.garminconnect/shots/
+.taste-skill/

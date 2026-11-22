@@ -15,11 +15,12 @@ const BASE: echarts.EChartsOption = {
 };
 
 export const PALETTE = {
-  accent: "#059669",
+  accent: "#fc4c02",
+  ink: "#232323",
   blue: "#2563eb",
   red: "#e11d48",
   amber: "#d97706",
-  violet: "#7c3aed",
+  violet: "#94a3b8",
   cyan: "#0891b2",
   slate: "#64748b",
   grid: "#f1f5f9",
@@ -30,7 +31,7 @@ export function axisStyle() {
     axisLine: { show: false },
     axisTick: { show: false },
     splitLine: { lineStyle: { color: PALETTE.grid } },
-    axisLabel: { color: "#94a3b8", fontSize: 10 },
+    axisLabel: { color: "#64748b", fontSize: 11 },
   };
 }
 

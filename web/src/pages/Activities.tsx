@@ -29,7 +29,7 @@ function Stat({ icon, value, sub }: { icon: React.ReactNode; value: string; sub?
     <div className="flex items-center gap-1.5 text-slate-600">
       <span className="text-slate-400">{icon}</span>
       <span className="num text-sm font-semibold text-slate-800">{value}</span>
-      {sub && <span className="text-[11px] text-slate-400">{sub}</span>}
+      {sub && <span className="text-[11px] text-slate-500">{sub}</span>}
     </div>
   );
 }
@@ -78,7 +78,7 @@ export default function Activities() {
             onClick={() => setSport(f)}
             className={`shrink-0 chip border transition-colors ${
               sport === f
-                ? "bg-slate-900 text-white border-slate-900"
+                ? "bg-accent text-white border-accent"
                 : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
             }`}
           >
@@ -93,7 +93,8 @@ export default function Activities() {
 
       {/* 桌面：密集表格 */}
       <div className="hidden lg:block card !p-0 overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[880px] text-[13px]">
           <thead>
             <tr className="text-left text-[11px] text-slate-400 border-b border-slate-100">
               <th className="font-medium px-5 py-3">日期</th>
@@ -115,7 +116,7 @@ export default function Activities() {
                 <tr key={a.id} onClick={() => navigate(`/activities/${a.id}`)}
                   className={`cursor-pointer hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 ${newDay && i > 0 ? "border-t border-t-slate-200/70" : ""}`}>
                   <td className="px-5 py-2.5 whitespace-nowrap text-slate-500 num">
-                    {newDay ? dayLabel(a.start_time) : <span className="text-slate-300">{a.start_time.slice(11, 16)}</span>}
+                    {dayLabel(a.start_time)}
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="flex items-center gap-2.5">
@@ -129,16 +130,17 @@ export default function Activities() {
                     {a.sport === "cycling" ? (a.avg_pace_sec_km ? `${a.avg_pace_sec_km} km/h` : "—") : a.avg_pace_sec_km ? fmtPace(a.avg_pace_sec_km) : "—"}
                   </td>
                   <td className="px-3 py-2.5 text-right num text-slate-700">{a.avg_power ?? "—"}</td>
-                  <td className="px-3 py-2.5 text-right num text-rose-500">{a.avg_hr ?? "—"}</td>
+                  <td className="px-3 py-2.5 text-right num text-slate-700">{a.avg_hr ?? "—"}</td>
                   <td className="px-3 py-2.5 text-right num text-slate-500">{a.training_load ? Math.round(a.training_load) : "—"}</td>
                   <td className="px-5 py-2.5 text-right">
-                    <span className="chip bg-blue-50 text-blue-600 !px-1.5 !py-0"><Layers size={11} /> {a.merged_sources}</span>
+                    <span className="chip bg-slate-100 text-slate-600 !px-1.5 !py-0"><Layers size={11} /> {a.merged_sources}</span>
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* 移动：分组卡片 */}
@@ -149,13 +151,13 @@ export default function Activities() {
             <div className="space-y-2">
               {list.map((a) => (
                 <Link key={a.id} to={`/activities/${a.id}`}
-                  className="card !p-4 flex items-center gap-3.5 hover:border-slate-300 hover:shadow-md transition-all group">
+                  className="card lift !p-4 flex items-center gap-3.5 hover:border-slate-300 group">
                   <SportIcon sport={a.sport} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-[15px] text-slate-900 truncate">{a.name}</span>
                       {a.merged_sources > 1 && (
-                        <span className="chip !px-1.5 !py-0 bg-blue-50 text-blue-600 gap-0.5 shrink-0">
+                        <span className="chip !px-1.5 !py-0 bg-slate-100 text-slate-600 gap-0.5 shrink-0">
                           <Layers size={11} /> {a.merged_sources}
                         </span>
                       )}
@@ -170,7 +172,7 @@ export default function Activities() {
                       ) : a.avg_pace_sec_km ? (
                         <Stat icon={<span className="text-[10px] font-bold">P</span>} value={fmtPace(a.avg_pace_sec_km)} sub="/km" />
                       ) : null}
-                      {a.avg_hr ? <Stat icon={<Heart size={13} className="text-rose-400" />} value={`${a.avg_hr}`} sub="bpm" /> : null}
+                      {a.avg_hr ? <Stat icon={<Heart size={13} className="text-slate-400" />} value={`${a.avg_hr}`} sub="bpm" /> : null}
                     </div>
                   </div>
                   <ChevronRight size={16} className="text-slate-300 group-hover:text-slate-500 transition-colors shrink-0" />

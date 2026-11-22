@@ -74,12 +74,14 @@ async function apiGet<T = any>(path: string): Promise<T> {
     const token = await accessToken();
     const res = await fetch(`${API}${path}`, { headers: { Authorization: `Bearer ${token}` } });
     if (res.status === 429) {
-      // 读限流 100/15min：短等待重试一次，长等待放弃本轮（下次同步再补）
+      // 读限流 100/15min + 1000/天；Strava 常不给 reset 头，按自然整刻窗推算恢复时间
+      const now = Math.floor(Date.now() / 1000);
       const retry = Number(res.headers.get("retry-after") ?? 0);
-      const reset = Number(res.headers.get("x-ratelimit-reset") ?? 0);
-      const wait = retry > 0 ? retry : Math.max(0, reset - Math.floor(Date.now() / 1000));
+      const resetHdr = Number(res.headers.get("x-ratelimit-reset") ?? 0);
+      const quarter = Math.ceil(now / 900) * 900;
+      const wait = retry > 0 ? retry : resetHdr > now ? resetHdr - now : quarter - now;
       if (attempt === 0 && wait > 0 && wait <= 60) { await sleep(wait * 1000); continue; }
-      throw new Error(`Strava 限流 429（${wait}s 后恢复），本轮跳过`);
+      throw new Error(`Strava 限流 429（读窗口/日额度耗尽，约 ${wait}s 后恢复），本轮跳过`);
     }
     if (res.status === 401) {
       const t = loadToken();
@@ -99,10 +101,6 @@ function mapSport(s: string | undefined): Sport {
   if (v.includes("swim")) return "swimming";
   if (v.includes("hik") || v.includes("walk")) return "hiking";
   return "other";
-}
-
-function isSuuntoOrigin(a: any): boolean {
-  return /suunto/i.test(String(a.device_name ?? "")) || /suunto/i.test(String(a.external_id ?? ""));
 }
 
 async function lapsFor(id: string): Promise<any[]> {
@@ -177,7 +175,6 @@ export const stravaAdapter: SyncAdapter = {
       const arr = Array.isArray(list) ? list : [];
       if (!arr.length) break;
       for (const a of arr) {
-        if (!isSuuntoOrigin(a)) continue; // 只取颂拓源，佳明走直连
         const sport = mapSport(a.sport_type ?? a.type);
         const distanceM = a.distance != null ? Number(a.distance) : undefined;
         const durationSec = Math.round(Number(a.moving_time ?? a.elapsed_time ?? 0));
